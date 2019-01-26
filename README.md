@@ -1,6 +1,6 @@
 Simple read-only JDBC driver for OpenOffice/LibreOffice Base ODB files.
 
-OpenOffice Base (.odb) files are actually a .zip archive containing [HSQLDB](http://hsqldb.org/) directory.
+OpenOffice Base (.odb) files are actually a .zip archive containing a [HSQLDB](http://hsqldb.org/) directory.
 This driver extracts the .zip archive into a temporary directory, opens a JDBC connection to the HSQLDB and forwards all requests to the HSQLDB driver.
 
 The driver does not prohibit the user to perform UPDATE/INSERT statements, but any changes will simply get lost.
