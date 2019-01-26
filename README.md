@@ -11,16 +11,14 @@ Although the driver is written in Kotlin, it should work with any JVM language.
 Class.forName("de.debuglevel.odbjdbc.OdbDriver")
 val database = "jdbc:odb://file=test.odb"
 
-connection = DriverManager.getConnection(database)
+val connection = DriverManager.getConnection(database)
 
 val statement = connection.createStatement()
 val resultset = statement.executeQuery("SELECT * FROM \"PUBLIC\".\"Positionen\"")
 
 while (resultset.next()) {
     println(
-        resultset.getString("id") +
-            resultset.getString("positiontitle") +
-            resultset.getString("description")
+        resultset.getString("id")
     )
 }
 
