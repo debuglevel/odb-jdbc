@@ -1,5 +1,6 @@
 package de.debuglevel.odbjdbc
 
+import mu.KotlinLogging
 import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
@@ -9,24 +10,32 @@ import java.util.zip.ZipEntry
 import java.util.zip.ZipInputStream
 
 class UnzipUtility {
-    @Throws(IOException::class)
-    fun unzip(zip: String, destinationDir: String?) {
-        val destDir = File(destinationDir)
+    private val logger = KotlinLogging.logger {}
+
+    fun unzip(zip: String, destinationDirectory: File) {
+        logger.trace { "Unzipping $zip to $destinationDirectory" }
+
         val buffer = ByteArray(1024)
-        val zis = ZipInputStream(FileInputStream(zip))
-        var zipEntry = zis.nextEntry
+        val zipInputStream = ZipInputStream(FileInputStream(zip))
+
+        var zipEntry = zipInputStream.nextEntry
         while (zipEntry != null) {
-            val newFile = newFile(destDir, zipEntry)
-            val fos = FileOutputStream(newFile)
+            logger.trace { "Processing ZIP entry $zipEntry..." }
+
+            val destinationFile = newFile(destinationDirectory, zipEntry)
+            val fileOutputStream = FileOutputStream(destinationFile)
             var len: Int
-            while (zis.read(buffer).also { len = it } > 0) {
-                fos.write(buffer, 0, len)
+            while (zipInputStream.read(buffer).also { len = it } > 0) {
+                fileOutputStream.write(buffer, 0, len)
             }
-            fos.close()
-            zipEntry = zis.nextEntry
+            fileOutputStream.close()
+
+            zipEntry = zipInputStream.nextEntry
         }
-        zis.closeEntry()
-        zis.close()
+        zipInputStream.closeEntry()
+
+        logger.trace { "Closing..." }
+        zipInputStream.close()
     }
 
     companion object {
@@ -35,14 +44,14 @@ class UnzipUtility {
          */
         @Throws(IOException::class)
         fun newFile(destinationDir: File, zipEntry: ZipEntry): File {
-            val destFile = File(destinationDir, zipEntry.name)
-            val destDirPath = destinationDir.canonicalPath
-            val destFilePath = destFile.canonicalPath
-            Files.createDirectories(destFile.parentFile.toPath())
-            if (!destFilePath.startsWith(destDirPath + File.separator)) {
+            val destinationFile = File(destinationDir, zipEntry.name)
+            val destinationDirectoryPath = destinationDir.canonicalPath
+            val destinationFilePath = destinationFile.canonicalPath
+            Files.createDirectories(destinationFile.parentFile.toPath())
+            if (!destinationFilePath.startsWith(destinationDirectoryPath + File.separator)) {
                 throw IOException("Entry is outside of the target dir: " + zipEntry.name)
             }
-            return destFile
+            return destinationFile
         }
     }
 }

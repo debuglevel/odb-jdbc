@@ -45,7 +45,8 @@ class OdbConnection(
 
             val hsqldbDirectory = extractHsqldb(Paths.get(fileName), odbExtractedPath)
             hsqldbConnection = createHsqldbConnection(hsqldbDirectory)
-        } catch (ex: Exception) {
+        } catch (e: Exception) {
+            logger.error(e) { "Error while opening ODB file '$fileName'" }
             throw SQLException("Connection: Error opening ODB file '$fileName'")
         }
     }
@@ -67,9 +68,9 @@ class OdbConnection(
     private fun extractHsqldb(odbPath: Path, destinationDirectory: File): File {
         logger.trace { "Extracting HSQLDB..." }
 
-        logger.trace { "Unzipping ODB '${odbPath.toAbsolutePath()}' to '${odbExtractedPath.absolutePath}'..." }
-        UnzipUtility().unzip(odbPath.toAbsolutePath().toString(), odbExtractedPath.absolutePath)
-        logger.trace { "Unzipped ODB '${odbPath.toAbsolutePath()}' to '${odbExtractedPath.absolutePath}'" }
+        logger.trace { "Unzipping ODB '${odbPath.toAbsolutePath()}' to '${odbExtractedPath.absoluteFile}'..." }
+        UnzipUtility().unzip(odbPath.toAbsolutePath().toString(), odbExtractedPath.absoluteFile)
+        logger.trace { "Unzipped ODB '${odbPath.toAbsolutePath()}' to '${odbExtractedPath.absoluteFile}'" }
 
         val databasePath = odbExtractedPath.resolve("database")
         databasePath.listFiles().forEach {

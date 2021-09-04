@@ -11,9 +11,10 @@ class OdbDriver : java.sql.Driver {
     companion object {
         init {
             try {
-                DriverManager.registerDriver(OdbDriver());
+                DriverManager.registerDriver(OdbDriver())
             } catch (e: Exception) {
-                e.printStackTrace();
+                logger.error(e) { "Error while driver registration" }
+                e.printStackTrace()
             }
         }
     }
@@ -23,7 +24,7 @@ class OdbDriver : java.sql.Driver {
      * @return this driver's minor version number
      */
     override fun getMinorVersion(): Int {
-        return 0;
+        return 0
     }
 
     /**
@@ -138,6 +139,7 @@ class OdbDriver : java.sql.Driver {
      * `null`
      */
     override fun connect(url: String, info: Properties?): Connection? {
+        logger.trace { "Connecting to '$url'..." }
         return when {
             !acceptsURL(url) -> null
             else -> OdbConnection(this, url, info)

@@ -6,7 +6,7 @@ import java.sql.Connection
 import java.sql.DriverManager
 import java.sql.SQLException
 
-private val logger = KotlinLogging.logger {}
+val logger = KotlinLogging.logger {}
 
 fun main(args: Array<String>) {
     Class.forName("de.debuglevel.odbjdbc.OdbDriver")
